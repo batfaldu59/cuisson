@@ -2,10 +2,10 @@ import time
 import beepy
 
 
-def cuisson(nb_minute_cuisson):
-    duree = nb_minute_cuisson * 60
+def effectuer_cuisson(index_choix):
+    duree = CUISSONS[index_choix-1][1] * 60
     print("Cuisson en cours: ", end="", flush=True)
-
+    print()
     while duree > 0:
         print("Temps restant: ", end="", flush=True)
         min = duree // 60
@@ -17,27 +17,40 @@ def cuisson(nb_minute_cuisson):
         print()
         duree -= 10
 
+
+def demander_choix_cuisson(min, max):
+    choix_str = input(f"Votre choix (entre {min} et {max}): ")
+    try:
+        choix_int = int(choix_str)
+        if not min <= choix_int <= max:
+            print(f"ERREUR: votre choix doit être entre {min} et {max}")
+            return demander_choix_cuisson(min, max)
+        return choix_int
+    except ValueError:
+        print("ERREUR: vous ne pouvez rentrer qu'une valeur numérique")
+        return demander_choix_cuisson(min, max)
+
+
 # --------------------- Programme principale
 
 
-choix = ""
-while choix != "a" and choix != "b" and choix != "c":
-    title = "Choix de cuisson"
-    print("-"*len(title), title, "-"*len(title))
-    print("a - Oeufs à la coque (3min)")
-    print("b - Oeufs mollets (6 min)")
-    print("c - Oeufs dur (9 min)")
-    choix = input("Votre choix: ")
-    if choix != "a" and choix and "b" and choix != "c":
-        print("ERREUR: le choix doit être soit a, b ou c")
-    elif choix == "a":
-        cuisson(3)
-    elif choix == "b":
-        cuisson(6)
-    else:
-        cuisson(9)
+CUISSONS = (
+    ("Oeufs à la coque", 3),
+    ("Oeufs mollets", 6),
+    ("Oeufs dur", 9)
+)
+title = "Choix de cuisson"
 
 
+print("-"*len(title), title, "-"*len(title))
+index = 1
+for cuisson in CUISSONS:
+    print(f"{index}) {cuisson[0]} ({cuisson[1]} min)")
+    index += 1
+
+valeur_max_choix = index - 1
+choix = demander_choix_cuisson(1, valeur_max_choix)
+effectuer_cuisson(choix)
 print("Cuisson términée!")
 beepy.beep(sound="ping")
 
